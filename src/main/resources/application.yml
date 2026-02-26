@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: agent
+
+github:
+  owner: philippelin
+  repo: lab_mcp_ai_agent_springboot
+
+openai:
+  api-key: demo
+  model: gpt-4o-mini
+  timeout-seconds: 60
+
+mcp:
+  base-url: http://localhost:3333
+  path: /mcp
