@@ -94,22 +94,34 @@ jobs:
           kubectl wait --for=condition=Ready pod -l app=ai-agent --timeout=180s
           kubectl get pods -o wide
           kubectl get svc
-          minikube service list
-          sleep 20
+
+      - name: Start port-forward
+        run: |
+          kubectl port-forward svc/ai-agent 8080:8080 > port-forward.log 2>&1 &
+          echo $! > port-forward.pid
+          sleep 10
+          cat port-forward.log
 
       - name: Test service health endpoint
         uses: nick-fields/retry@v3
         with:
           timeout_seconds: 10
           max_attempts: 6
-          command: |
-            SERVICE_URL=$(minikube service ai-agent --url | grep '^http' | head -n 1)
-            echo "Using service URL: $SERVICE_URL"
-            curl -fsS "${SERVICE_URL}/actuator/health"
+          command: curl -fsS http://127.0.0.1:8080/actuator/health
 
       - name: Log Kubernetes pods
         run: |
           kubectl logs -l app=ai-agent --tail=200
+
+      - name: Log port-forward output
+        if: always()
+        run: |
+          cat port-forward.log || true
+
+      - name: Stop port-forward
+        if: always()
+        run: |
+          kill $(cat port-forward.pid) || true
 
       - name: Log pods on failure
         if: failure()
