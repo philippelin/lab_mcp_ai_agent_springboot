@@ -28,13 +28,9 @@ public class LangChainConfig {
   }
 
     @Bean
-    public BacklogAgent backlogAgent(OpenAiChatModel model,
-                                     ObjectProvider<List<Object>> toolBeansProvider) {
-        List<Object> toolBeans = toolBeansProvider.getIfAvailable(List::of);
-
+    public BacklogAgent backlogAgent(OpenAiChatModel model) {
         return AiServices.builder(BacklogAgent.class)
                 .chatModel(model)
-                .tools(toolBeans)
                 .build();
     }
 }
