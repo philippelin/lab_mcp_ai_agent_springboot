@@ -103,7 +103,9 @@ jobs:
           timeout_seconds: 10
           max_attempts: 6
           command: |
-            curl -fsS "$(minikube service ai-agent --url)/actuator/health"
+            SERVICE_URL=$(minikube service ai-agent --url | grep '^http' | head -n 1)
+            echo "Using service URL: $SERVICE_URL"
+            curl -fsS "${SERVICE_URL}/actuator/health"
 
       - name: Log Kubernetes pods
         run: |
